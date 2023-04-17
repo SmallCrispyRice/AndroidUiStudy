@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+        <Button
+            android:id="@+id/btn_delete_books"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CommonButton"
+            android:text="删除"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rl_bookshelf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:spanCount="3"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/item_bookshelf"/>
+    </LinearLayout>
+</layout>
