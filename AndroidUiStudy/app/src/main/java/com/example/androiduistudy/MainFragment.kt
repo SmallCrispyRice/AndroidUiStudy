@@ -34,6 +34,7 @@ class MainFragment : BaseFragment() {
         val navItems = mutableListOf<NavItem>()
         navItems.add(NavItem("索引列表",R.id.action_mainFragment_to_indexListFragment))
         navItems.add(NavItem("小说书架",R.id.action_mainFragment_to_bookshelfFragment))
+        navItems.add(NavItem("写字板",R.id.action_mainFragment_to_tabletFragment))
         val adapter = ShowAdapter(navItems,findNavController())
         binding.rvMainShow.adapter = adapter
     }

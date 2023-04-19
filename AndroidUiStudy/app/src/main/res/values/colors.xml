@@ -15,4 +15,5 @@
     <color name="text_999">#999999</color>
     <color name="text_blue">#FF5DA9FF</color>
     <color name="text_blue2">#995DA9FF</color>
+    <color name="bg_f5">#F5F5F5</color>
 </resources>

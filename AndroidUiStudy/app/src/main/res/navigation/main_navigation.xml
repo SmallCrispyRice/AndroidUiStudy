@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_mainFragment_to_bookshelfFragment"
             app:destination="@id/bookshelfFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_tabletFragment"
+            app:destination="@id/tabletFragment" />
     </fragment>
     <fragment
         android:id="@+id/indexListFragment"
@@ -23,4 +26,8 @@
         android:id="@+id/bookshelfFragment"
         android:name="com.example.androiduistudy.ui.bookshelf.BookshelfFragment"
         android:label="BookshelfFragment" />
+    <fragment
+        android:id="@+id/tabletFragment"
+        android:name="com.example.androiduistudy.ui.tablet.TabletFragment"
+        android:label="TabletFragment" />
 </navigation>
