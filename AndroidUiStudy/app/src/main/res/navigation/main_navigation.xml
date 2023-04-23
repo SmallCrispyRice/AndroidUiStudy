@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_mainFragment_to_tabletFragment"
             app:destination="@id/tabletFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_rockerFragment"
+            app:destination="@id/rockerFragment" />
     </fragment>
     <fragment
         android:id="@+id/indexListFragment"
@@ -30,4 +33,8 @@
         android:id="@+id/tabletFragment"
         android:name="com.example.androiduistudy.ui.tablet.TabletFragment"
         android:label="TabletFragment" />
+    <fragment
+        android:id="@+id/rockerFragment"
+        android:name="com.example.androiduistudy.ui.rocker.RockerFragment"
+        android:label="RockerFragment" />
 </navigation>
