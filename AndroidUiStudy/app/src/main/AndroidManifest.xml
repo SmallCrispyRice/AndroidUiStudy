@@ -3,7 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.androiduistudy">
 
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--    精确位置信息权限，通过GPS获取位置信息-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--    大致位置信息权限，通过WiFi或基站获取位置信息-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:name=".CustomApplication"
         android:allowBackup="true"

@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_mainFragment_to_rockerFragment"
             app:destination="@id/rockerFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_radarFragment"
+            app:destination="@id/radarFragment" />
     </fragment>
     <fragment
         android:id="@+id/indexListFragment"
@@ -37,4 +40,8 @@
         android:id="@+id/rockerFragment"
         android:name="com.example.androiduistudy.ui.rocker.RockerFragment"
         android:label="RockerFragment" />
+    <fragment
+        android:id="@+id/radarFragment"
+        android:name="com.example.androiduistudy.ui.radar.RadarFragment"
+        android:label="RadarFragment" />
 </navigation>
