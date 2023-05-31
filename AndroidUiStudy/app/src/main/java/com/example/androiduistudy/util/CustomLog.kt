@@ -4,6 +4,7 @@ import android.util.Log
 
 object CustomLog {
     private var isDebug = false
+    private var defaultTag = "测试"
 
     fun init(isDebug: Boolean){
         CustomLog.isDebug = isDebug
@@ -17,7 +18,7 @@ object CustomLog {
 
     fun d(message:String){
         if (isDebug){
-            Log.d("测试",message)
+            Log.d(defaultTag,message)
         }
     }
 

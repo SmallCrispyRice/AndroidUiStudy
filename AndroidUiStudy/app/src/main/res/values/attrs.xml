@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BoundingBoxImageView">
+        <attr name="show_drag_width" format="boolean"/>
+        <attr name="drag_width" format="dimension"/>
+        <attr name="box_line_width" format="dimension"/>
+        <attr name="box_color" format="color"/>
+        <attr name="decoration_color" format="color"/>
+        <attr name="decoration_line_length" format="dimension"/>
+        <attr name="decoration_line_width" format="dimension"/>
+        <attr name="decoration_type" format="enum">
+            <enum name="none" value="0"/>
+            <enum name="circle" value="1"/>
+            <enum name="rect" value="2"/>
+            <enum name="out_rect" value="3"/>
+        </attr>
+    </declare-styleable>
+</resources>

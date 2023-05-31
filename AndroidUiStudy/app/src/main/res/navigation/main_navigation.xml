@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_mainFragment_to_radarFragment"
             app:destination="@id/radarFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_boundingBoxFragment"
+            app:destination="@id/boundingBoxFragment" />
     </fragment>
     <fragment
         android:id="@+id/indexListFragment"
@@ -34,14 +37,18 @@
         android:label="BookshelfFragment" />
     <fragment
         android:id="@+id/tabletFragment"
-        android:name="com.example.androiduistudy.ui.tablet.TabletFragment"
+        android:name="com.example.androiduistudy.ui.TabletFragment"
         android:label="TabletFragment" />
     <fragment
         android:id="@+id/rockerFragment"
-        android:name="com.example.androiduistudy.ui.rocker.RockerFragment"
+        android:name="com.example.androiduistudy.ui.RockerFragment"
         android:label="RockerFragment" />
     <fragment
         android:id="@+id/radarFragment"
-        android:name="com.example.androiduistudy.ui.radar.RadarFragment"
+        android:name="com.example.androiduistudy.ui.RadarFragment"
         android:label="RadarFragment" />
+    <fragment
+        android:id="@+id/boundingBoxFragment"
+        android:name="com.example.androiduistudy.ui.BoundingBoxFragment"
+        android:label="BoundingBoxFragment" />
 </navigation>

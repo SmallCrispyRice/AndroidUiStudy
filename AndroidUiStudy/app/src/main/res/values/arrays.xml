@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bounding_box_decoration_type">
+        <item>无装饰</item>
+        <item>圆</item>
+        <item>矩形</item>
+        <item>外矩形</item>
+    </string-array>
+</resources>

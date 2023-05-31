@@ -36,7 +36,8 @@ class MainFragment : BaseFragment() {
         navItems.add(NavItem("小说书架",R.id.action_mainFragment_to_bookshelfFragment))
         navItems.add(NavItem("写字板",R.id.action_mainFragment_to_tabletFragment))
         navItems.add(NavItem("虚拟摇杆",R.id.action_mainFragment_to_rockerFragment))
-        navItems.add(NavItem("雷达图",R.id.action_mainFragment_to_radarFragment))
+        navItems.add(NavItem("雷达地图",R.id.action_mainFragment_to_radarFragment))
+        navItems.add(NavItem("算法标注框",R.id.action_mainFragment_to_boundingBoxFragment))
         val adapter = ShowAdapter(navItems,findNavController())
         binding.rvMainShow.adapter = adapter
     }
