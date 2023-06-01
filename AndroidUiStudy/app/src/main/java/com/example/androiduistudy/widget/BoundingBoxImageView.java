@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 
 import com.example.androiduistudy.R;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -38,6 +37,7 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
     private boolean boxRectConfirm = false;//标注框确认 当第一次手指松开时候该值为true，确定标注框已经有了
     private boolean changeBoxSide = false;//标注框形状改变
     private boolean showDragWidth = false;//展示拖拽区域
+    private boolean dragBox = false;
     private float boxLineWidth = 5;//标注框线宽
     private float dragWidth = 30;//拖拽区域宽度
     private float decorationLineLength = 80;//装饰线长度
@@ -47,7 +47,8 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
     private float viewWidth, viewHeight;
     private float leftPercent, topPercent, rightPercent, bottomPercent;
     private int[] coordinates = new int[4];//保存标注框左上角与右下角点左边，startX,startY,endX,endY
-    private Point startPoint = new Point(),endPoint = new Point();
+    private float moveBoxRectLeft, moveBoxRectRight, moveBoxRectTop, moveBoxRectBottom;
+    private Point startPoint = new Point(), endPoint = new Point();
     private int boxColor = Color.parseColor("#99129823");
     private int decorationColor = Color.parseColor("#5DA9FF");
     private int decorationType = NONE;
@@ -82,7 +83,7 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
         decorationLineLength = typedArray.getDimension(R.styleable.BoundingBoxImageView_decoration_line_length, decorationLineLength);
         decorationLineWidth = typedArray.getDimension(R.styleable.BoundingBoxImageView_decoration_line_width, decorationLineWidth);
         decorationColor = typedArray.getColor(R.styleable.BoundingBoxImageView_decoration_color, decorationColor);
-        decorationType = typedArray.getInt(R.styleable.BoundingBoxImageView_decoration_type,decorationType);
+        decorationType = typedArray.getInt(R.styleable.BoundingBoxImageView_decoration_type, decorationType);
 
         typedArray.recycle();//释放，避免内存泄露
 
@@ -104,7 +105,6 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
         cornerPaint = new Paint();
         cornerPaint.setColor(Color.parseColor("#99876534"));
         cornerPaint.setStrokeWidth(dragWidth);
-
     }
 
     @Override
@@ -152,33 +152,33 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                 return;
             } else if (type == RECT) {
                 //左上右下
-                canvas.drawLine(boxRectF.left, (boxRectF.top + boxRectF.bottom) / 2 - decorationLineLength / 2, boxRectF.left, (boxRectF.top + boxRectF.bottom) / 2 + decorationLineLength / 2, decorationPaint);
-                canvas.drawLine((boxRectF.left + boxRectF.right) / 2 - decorationLineLength / 2, boxRectF.top, (boxRectF.left + boxRectF.right) / 2 + decorationLineLength / 2, boxRectF.top, decorationPaint);
-                canvas.drawLine(boxRectF.right, (boxRectF.top + boxRectF.bottom) / 2 - decorationLineLength / 2, boxRectF.right, (boxRectF.top + boxRectF.bottom) / 2 + decorationLineLength / 2, decorationPaint);
-                canvas.drawLine((boxRectF.left + boxRectF.right) / 2 - decorationLineLength / 2, boxRectF.bottom, (boxRectF.left + boxRectF.right) / 2 + decorationLineLength / 2, boxRectF.bottom, decorationPaint);
+                canvas.drawLine(moveBoxRectLeft, (moveBoxRectTop + moveBoxRectBottom) / 2 - decorationLineLength / 2, moveBoxRectLeft, (moveBoxRectTop + moveBoxRectBottom) / 2 + decorationLineLength / 2, decorationPaint);
+                canvas.drawLine((moveBoxRectLeft + moveBoxRectRight) / 2 - decorationLineLength / 2, moveBoxRectTop, (moveBoxRectLeft + moveBoxRectRight) / 2 + decorationLineLength / 2, moveBoxRectTop, decorationPaint);
+                canvas.drawLine(moveBoxRectRight, (moveBoxRectTop + moveBoxRectBottom) / 2 - decorationLineLength / 2, moveBoxRectRight, (moveBoxRectTop + moveBoxRectBottom) / 2 + decorationLineLength / 2, decorationPaint);
+                canvas.drawLine((moveBoxRectLeft + moveBoxRectRight) / 2 - decorationLineLength / 2, moveBoxRectBottom, (moveBoxRectLeft + moveBoxRectRight) / 2 + decorationLineLength / 2, moveBoxRectBottom, decorationPaint);
 
                 leftTopPath.reset();
-                leftTopPath.moveTo(boxRectF.left, boxRectF.top + decorationLineLength);
-                leftTopPath.lineTo(boxRectF.left, boxRectF.top);
-                leftTopPath.lineTo(boxRectF.left + decorationLineLength, boxRectF.top);
+                leftTopPath.moveTo(moveBoxRectLeft, moveBoxRectTop + decorationLineLength);
+                leftTopPath.lineTo(moveBoxRectLeft, moveBoxRectTop);
+                leftTopPath.lineTo(moveBoxRectLeft + decorationLineLength, moveBoxRectTop);
                 canvas.drawPath(leftTopPath, decorationPaint);
 
                 rightTopPath.reset();
-                rightTopPath.moveTo(boxRectF.right - decorationLineLength, boxRectF.top);
-                rightTopPath.lineTo(boxRectF.right, boxRectF.top);
-                rightTopPath.lineTo(boxRectF.right, boxRectF.top + decorationLineLength);
+                rightTopPath.moveTo(moveBoxRectRight - decorationLineLength, moveBoxRectTop);
+                rightTopPath.lineTo(moveBoxRectRight, moveBoxRectTop);
+                rightTopPath.lineTo(moveBoxRectRight, moveBoxRectTop + decorationLineLength);
                 canvas.drawPath(rightTopPath, decorationPaint);
 
                 rightBottomPath.reset();
-                rightBottomPath.moveTo(boxRectF.right, boxRectF.bottom - decorationLineLength);
-                rightBottomPath.lineTo(boxRectF.right, boxRectF.bottom);
-                rightBottomPath.lineTo(boxRectF.right - decorationLineLength, boxRectF.bottom);
+                rightBottomPath.moveTo(moveBoxRectRight, moveBoxRectBottom - decorationLineLength);
+                rightBottomPath.lineTo(moveBoxRectRight, moveBoxRectBottom);
+                rightBottomPath.lineTo(moveBoxRectRight - decorationLineLength, moveBoxRectBottom);
                 canvas.drawPath(rightBottomPath, decorationPaint);
 
                 leftBottomPath.reset();
-                leftBottomPath.moveTo(boxRectF.left + decorationLineLength, boxRectF.bottom);
-                leftBottomPath.lineTo(boxRectF.left, boxRectF.bottom);
-                leftBottomPath.lineTo(boxRectF.left, boxRectF.bottom - decorationLineLength);
+                leftBottomPath.moveTo(moveBoxRectLeft + decorationLineLength, moveBoxRectBottom);
+                leftBottomPath.lineTo(moveBoxRectLeft, moveBoxRectBottom);
+                leftBottomPath.lineTo(moveBoxRectLeft, moveBoxRectBottom - decorationLineLength);
                 canvas.drawPath(leftBottomPath, decorationPaint);
             } else if (type == CIRCLE) {
                 //角装饰 左上 右上 右下 左下
@@ -192,33 +192,33 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                 canvas.drawCircle(boxRectF.right, (boxRectF.top + boxRectF.bottom) / 2, decorationLineWidth / 2, decorationPaint);
                 canvas.drawCircle((boxRectF.left + boxRectF.right) / 2, boxRectF.bottom, decorationLineWidth / 2, decorationPaint);
             } else if (type == OUT_RECT) {
-                canvas.drawLine(boxRectF.left - decorationLineWidth / 2, (boxRectF.top + boxRectF.bottom) / 2 - decorationLineLength / 2, boxRectF.left - decorationLineWidth / 2, (boxRectF.top + boxRectF.bottom) / 2 + decorationLineLength / 2, decorationPaint);
-                canvas.drawLine((boxRectF.left + boxRectF.right) / 2 - decorationLineLength / 2, boxRectF.top - decorationLineWidth / 2, (boxRectF.left + boxRectF.right) / 2 + decorationLineLength / 2, boxRectF.top - decorationLineWidth / 2, decorationPaint);
-                canvas.drawLine(boxRectF.right + decorationLineWidth / 2, (boxRectF.top + boxRectF.bottom) / 2 - decorationLineLength / 2, boxRectF.right + decorationLineWidth / 2, (boxRectF.top + boxRectF.bottom) / 2 + decorationLineLength / 2, decorationPaint);
-                canvas.drawLine((boxRectF.left + boxRectF.right) / 2 - decorationLineLength / 2, boxRectF.bottom + decorationLineWidth / 2, (boxRectF.left + boxRectF.right) / 2 + decorationLineLength / 2, boxRectF.bottom + decorationLineWidth / 2, decorationPaint);
+                canvas.drawLine(moveBoxRectLeft - decorationLineWidth / 2, (moveBoxRectTop + moveBoxRectBottom) / 2 - decorationLineLength / 2, moveBoxRectLeft - decorationLineWidth / 2, (moveBoxRectTop + moveBoxRectBottom) / 2 + decorationLineLength / 2, decorationPaint);
+                canvas.drawLine((moveBoxRectLeft + moveBoxRectRight) / 2 - decorationLineLength / 2, moveBoxRectTop - decorationLineWidth / 2, (moveBoxRectLeft + moveBoxRectRight) / 2 + decorationLineLength / 2, moveBoxRectTop - decorationLineWidth / 2, decorationPaint);
+                canvas.drawLine(moveBoxRectRight + decorationLineWidth / 2, (moveBoxRectTop + moveBoxRectBottom) / 2 - decorationLineLength / 2, moveBoxRectRight + decorationLineWidth / 2, (moveBoxRectTop + moveBoxRectBottom) / 2 + decorationLineLength / 2, decorationPaint);
+                canvas.drawLine((moveBoxRectLeft + moveBoxRectRight) / 2 - decorationLineLength / 2, moveBoxRectBottom + decorationLineWidth / 2, (moveBoxRectLeft + moveBoxRectRight) / 2 + decorationLineLength / 2, moveBoxRectBottom + decorationLineWidth / 2, decorationPaint);
 
                 leftTopPath.reset();
-                leftTopPath.moveTo(boxRectF.left - decorationLineWidth / 2, boxRectF.top + decorationLineLength);
-                leftTopPath.lineTo(boxRectF.left - decorationLineWidth / 2, boxRectF.top - decorationLineWidth / 2);
-                leftTopPath.lineTo(boxRectF.left + decorationLineLength, boxRectF.top - decorationLineWidth / 2);
+                leftTopPath.moveTo(moveBoxRectLeft - decorationLineWidth / 2, moveBoxRectTop + decorationLineLength);
+                leftTopPath.lineTo(moveBoxRectLeft - decorationLineWidth / 2, moveBoxRectTop - decorationLineWidth / 2);
+                leftTopPath.lineTo(moveBoxRectLeft + decorationLineLength, moveBoxRectTop - decorationLineWidth / 2);
                 canvas.drawPath(leftTopPath, decorationPaint);
 
                 rightTopPath.reset();
-                rightTopPath.moveTo(boxRectF.right - decorationLineLength, boxRectF.top - decorationLineWidth / 2);
-                rightTopPath.lineTo(boxRectF.right + decorationLineWidth / 2, boxRectF.top - decorationLineWidth / 2);
-                rightTopPath.lineTo(boxRectF.right + decorationLineWidth / 2, boxRectF.top + decorationLineLength);
+                rightTopPath.moveTo(moveBoxRectRight - decorationLineLength, moveBoxRectTop - decorationLineWidth / 2);
+                rightTopPath.lineTo(moveBoxRectRight + decorationLineWidth / 2, moveBoxRectTop - decorationLineWidth / 2);
+                rightTopPath.lineTo(moveBoxRectRight + decorationLineWidth / 2, moveBoxRectTop + decorationLineLength);
                 canvas.drawPath(rightTopPath, decorationPaint);
 
                 rightBottomPath.reset();
-                rightBottomPath.moveTo(boxRectF.right + decorationLineWidth / 2, boxRectF.bottom - decorationLineLength);
-                rightBottomPath.lineTo(boxRectF.right + decorationLineWidth / 2, boxRectF.bottom + decorationLineWidth / 2);
-                rightBottomPath.lineTo(boxRectF.right - decorationLineLength, boxRectF.bottom + decorationLineWidth / 2);
+                rightBottomPath.moveTo(moveBoxRectRight + decorationLineWidth / 2, moveBoxRectBottom - decorationLineLength);
+                rightBottomPath.lineTo(moveBoxRectRight + decorationLineWidth / 2, moveBoxRectBottom + decorationLineWidth / 2);
+                rightBottomPath.lineTo(moveBoxRectRight - decorationLineLength, moveBoxRectBottom + decorationLineWidth / 2);
                 canvas.drawPath(rightBottomPath, decorationPaint);
 
                 leftBottomPath.reset();
-                leftBottomPath.moveTo(boxRectF.left + decorationLineLength, boxRectF.bottom + decorationLineWidth / 2);
-                leftBottomPath.lineTo(boxRectF.left - decorationLineWidth / 2, boxRectF.bottom + decorationLineWidth / 2);
-                leftBottomPath.lineTo(boxRectF.left - decorationLineWidth / 2, boxRectF.bottom - decorationLineLength);
+                leftBottomPath.moveTo(moveBoxRectLeft + decorationLineLength, moveBoxRectBottom + decorationLineWidth / 2);
+                leftBottomPath.lineTo(moveBoxRectLeft - decorationLineWidth / 2, moveBoxRectBottom + decorationLineWidth / 2);
+                leftBottomPath.lineTo(moveBoxRectLeft - decorationLineWidth / 2, moveBoxRectBottom - decorationLineLength);
                 canvas.drawPath(leftBottomPath, decorationPaint);
             }
         }
@@ -226,7 +226,7 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 //内部拦截 解决滑动冲突
                 getParent().requestDisallowInterceptTouchEvent(true);
@@ -249,6 +249,9 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                 if (sideBoxRectF.contains(downRectF) && !dragRectF.contains(downRectF) && boxRectConfirm) {
                     changeBoxSide = true;
                 }
+                if (dragRectF.contains(downRectF) && boxRectConfirm) {
+                    dragBox = true;
+                }
                 lastX = x;
                 lastY = y;
                 break;
@@ -260,7 +263,7 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                 }
 
                 //拖拽标注框 范围超出View时处理  改变框时候不触发下面条件
-                if (dragRectF.contains(downRectF) && !changeBoxSide && boxRectConfirm) {//手指按下点，在上一个lastBoxRectF矩形内，才考虑执行下面的代码   因为boxRectF会变的，有可能导致变着变着boxRectF包含了downRectF
+                if (dragBox) {//手指按下点，在上一个lastBoxRectF矩形内，才考虑执行下面的代码   因为boxRectF会变的，有可能导致变着变着boxRectF包含了downRectF
                     boxRectF.offset(offsetX, offsetY);
                 }
 
@@ -270,48 +273,56 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                     //感觉需要对 矩形上下左右区域做下区分
                     if (leftRectF.contains(downRectF)) {//左区域
                         boxRectF.left += offsetX;
-                    }else if (leftTopRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {//左上区域 特殊在，点击位置不位于上一次的标注框内
+                    } else if (leftTopRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {//左上区域 特殊在，点击位置不位于上一次的标注框内
                         boxRectF.left += offsetX;
                         boxRectF.top += offsetY;
-                    }else if (topRectF.contains(downRectF)) {//上区域
+                    } else if (topRectF.contains(downRectF)) {//上区域
                         boxRectF.top += offsetY;
-                    }else if (rightTopRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
+                    } else if (rightTopRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
                         boxRectF.top += offsetY;
                         boxRectF.right += offsetX;
-                    }else if (rightRectF.contains(downRectF)) {//右区域
+                    } else if (rightRectF.contains(downRectF)) {//右区域
                         boxRectF.right += offsetX;
-                    }else if (rightBottomRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
+                    } else if (rightBottomRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
                         boxRectF.right += offsetX;
                         boxRectF.bottom += offsetY;
-                    }else if (bottomRectF.contains(downRectF)) {//下区域
+                    } else if (bottomRectF.contains(downRectF)) {//下区域
                         boxRectF.bottom += offsetY;
-                    }else if (leftBottomRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
+                    } else if (leftBottomRectF.contains(downRectF) && !dragRectF.contains(downRectF)) {
                         boxRectF.left += offsetX;
                         boxRectF.bottom += offsetY;
                     }
                 }
 
                 //确认矩形 与 改变矩形大小都需要判断修改后的矩形是否超出View
-                if (boxRectF.left < 0){
+                if (boxRectF.left < 0) {
                     boxRectF.left = 0;
-                }else if (boxRectF.left > viewWidth){
+                } else if (boxRectF.left > viewWidth) {
                     boxRectF.left = viewWidth;
                 }
-                if (boxRectF.top < 0){
+                if (boxRectF.top < 0) {
                     boxRectF.top = 0;
-                }else if (boxRectF.top > viewHeight){
+                } else if (boxRectF.top > viewHeight) {
                     boxRectF.top = viewHeight;
                 }
-                if (boxRectF.right < 0){
+                if (boxRectF.right < 0) {
                     boxRectF.right = 0;
-                }else if (boxRectF.right > viewWidth){
+                } else if (boxRectF.right > viewWidth) {
                     boxRectF.right = viewWidth;
                 }
-                if (boxRectF.bottom < 0){
+                if (boxRectF.bottom < 0) {
                     boxRectF.bottom = 0;
-                }else if (boxRectF.bottom > viewHeight){
+                } else if (boxRectF.bottom > viewHeight) {
                     boxRectF.bottom = viewHeight;
                 }
+
+                if (decorationType == RECT || decorationType == OUT_RECT) {
+                    moveBoxRectLeft = Math.min(boxRectF.left, boxRectF.right);
+                    moveBoxRectRight = Math.max(boxRectF.left, boxRectF.right);
+                    moveBoxRectTop = Math.min(boxRectF.top, boxRectF.bottom);
+                    moveBoxRectBottom = Math.max(boxRectF.top, boxRectF.bottom);
+                }
+
                 lastX = x;
                 lastY = y;
                 break;
@@ -320,7 +331,14 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
                 float right = Math.max(boxRectF.left, boxRectF.right);
                 float top = Math.min(boxRectF.top, boxRectF.bottom);
                 float bottom = Math.max(boxRectF.top, boxRectF.bottom);
-                boxRectF.set(left,top,right,bottom);
+
+                //如果使用矩形样式可以注释下面四行代码
+                moveBoxRectLeft = left;
+                moveBoxRectRight = right;
+                moveBoxRectTop = top;
+                moveBoxRectBottom = bottom;
+
+                boxRectF.set(left, top, right, bottom);
                 lastBoxRect.set(boxRectF);
 
                 dragRectF.set(boxRectF.left + dragWidth, boxRectF.top + dragWidth, boxRectF.right - dragWidth, boxRectF.bottom - dragWidth);
@@ -356,24 +374,25 @@ public class BoundingBoxImageView extends androidx.appcompat.widget.AppCompatIma
 
                 boxRectConfirm = true;
                 changeBoxSide = false;
+                dragBox = false;
                 break;
         }
         postInvalidate();
         return true;
     }
 
-    public int[] getCoordinates(){
+    public int[] getCoordinates() {
         return coordinates;
     }
 
     public void clearBox() {
-        boxRectF.set(0,0,0,0);
-        Arrays.fill(coordinates,0);
+        boxRectF.set(0, 0, 0, 0);
+        Arrays.fill(coordinates, 0);
         boxRectConfirm = false;
         postInvalidate();
     }
 
-    public void setDecorationType(int decorationType){
+    public void setDecorationType(int decorationType) {
         this.decorationType = decorationType;
         postInvalidate();
     }
